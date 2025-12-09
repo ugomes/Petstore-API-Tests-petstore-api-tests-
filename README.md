@@ -1,120 +1,97 @@
-# Petstore-API-Tests
+# Automação de Testes de API - Petstore (Módulo Store)
 
-Automação de Testes de API para a Swagger Petstore (projeto de portfólio).
+Este projeto consiste em uma suíte de testes automatizados para a API pública [Swagger Petstore](https://petstore.swagger.io/), focando especificamente nas operações do módulo **Store** (Loja).
 
-Uma suíte de testes em Java que valida os principais fluxos do endpoint **Store** (Loja) da API pública: criação de pedidos, consulta, verificação de inventário e exclusão.
+O projeto valida o ciclo de vida de um pedido (criação, consulta e exclusão) e a verificação de inventário, garantindo a integridade dos dados e o status das respostas HTTP.
 
-Badges (substitua os links/IDs pelo seu repositório / CI quando disponível):
+## 🛠 Tecnologias Utilizadas
 
-- Build: ![build](https://img.shields.io/badge/build-pending-lightgrey)
-- Testes: ![tests](https://img.shields.io/badge/tests-passing-brightgreen)
-- Allure: ![allure](https://img.shields.io/badge/allure-report-available-blue)
+*   **[Java](https://www.java.com/)** (JDK 8+)
+*   **[RestAssured](https://rest-assured.io/)**: Framework para testes e validação de APIs REST.
+*   **[JUnit 5](https://junit.org/junit5/)**: Framework de testes para execução, asserções e ordenação.
+*   **[Allure Report](https://docs.qameta.io/allure/)**: Framework para geração de relatórios de execução detalhados.
+*   **[Hamcrest](http://hamcrest.org/)**: Biblioteca de matchers para asserções fluentes.
+*   **Maven**: Gerenciamento de dependências e build.
 
-Resumo rápido (para recrutadores)
+## 📋 Cenários de Teste
 
-- Objetivo: Demonstrar habilidade em automação de APIs REST usando Java, RestAssured e JUnit 5.
-- O que mostrar: execução dos testes, relatório Allure com evidências e um README claro que explique o que foi testado e como reproduzir.
-- Impacto: valida fluxos end-to-end (criação → leitura → inventário → deleção) em um serviço real de referência (Swagger Petstore).
+A classe `TestStore` utiliza a anotação `@TestMethodOrder` para garantir uma execução sequencial lógica, simulando o fluxo real de um usuário:
 
-Principais destaques técnicos
+1.  **Criar Pedido (POST)**: Envia um payload JSON para criar um novo pedido de venda.
+2.  **Consultar Pedido (GET)**: Busca o pedido recém-criado utilizando o ID extraído dinamicamente.
+3.  **Verificar Inventário (GET)**: Valida se o endpoint de inventário retorna um mapa de status.
+4.  **Deletar Pedido (DELETE)**: Remove o pedido criado e valida a mensagem de confirmação.
 
-- Linguagem: Java (JDK 8+)
-- Frameworks: RestAssured, JUnit 5, Hamcrest
-- Build: Maven
-- Estrutura de testes organizada com payloads em `src/test/resources/json`
-- Relatórios: Allure (instruções abaixo para geração local)
+## ⚙️ Configuração e Estrutura
 
-Estrutura do projeto
+### Massa de Dados
+Os dados utilizados nos testes são externalizados em um arquivo JSON para facilitar a manutenção.
 
-- Testes: `src/test/java` (contendo `TestPet`, `TestStore`, `TestUser`)
-- Dados de teste (JSON): `src/test/resources/json`
-- Arquivo principal de interesse: `src/test/java/TestStore.java`
+*   **Arquivo**: `src/test/resources/json/store.json`
+*   **Uso**: O teste lê este arquivo para enviar no corpo da requisição (POST) e para validar se a resposta (GET) contém os dados esperados.
 
-Por que este projeto é relevante para um recrutador
+### Estrutura de Pastas
+```text
+src
+├── test
+│   ├── java
+│   │   └── TestStore.java          # Lógica principal dos testes
+│   └── resources
+│       └── json
+│           └── store.json          # Massa de dados (Payload)
+```
 
-- Projetos de portfólio devem ser fáceis de executar e demonstrar resultados visuais (relatórios). Este repositório mostra testes automatizados funcionais sobre uma API pública e instruções para gerar um relatório Allure, o que facilita a inspeção por parte de avaliadores técnicos.
-- Inclui estratégias comuns: massa de dados externa, testes ordenados quando necessário e validações claras de respostas HTTP.
+## 🚀 Como Executar
 
-Como rodar (Windows - cmd.exe)
+### Pré-requisitos
+*   Java JDK 8 ou superior instalado.
+*   Maven instalado e configurado nas variáveis de ambiente.
 
-Pré-requisitos:
-- Java JDK 8 ou superior instalado e configurado no PATH
-- Maven instalado e configurado no PATH
+### Executando via Terminal
 
-Passos básicos:
+Para rodar todos os testes:
 
-1. Abra o Prompt de Comando na raiz do projeto (`D:\Estudo_QA\api-petstore-tests\petstore`).
-2. Execute os testes com Maven:
-
-```bat
+```bash
 mvn test
 ```
 
-Geração de relatório Allure (opções)
+### Executando via IDE (IntelliJ / Eclipse / VS Code)
+1.  Abra o arquivo `src/test/java/TestStore.java`.
+2.  Clique no ícone de "Run" ao lado da classe `TestStore`.
 
-Opção A — Usando o Allure CLI (recomendado para desenvolver localmente):
+## 📊 Relatórios (Allure)
 
-1. Instale o Allure CLI (ex.: Chocolatey):
+O projeto está configurado com o listener do Allure (`AllureRestAssured`), o que permite visualizar detalhes das requisições e respostas nos relatórios.
 
-```bat
-choco install allure
+Para visualizar o relatório após a execução dos testes, execute no terminal:
+
+```bash
+mvn allure:serve
 ```
 
-2. Rode os testes e sirva o relatório localmente:
+*Isso abrirá automaticamente uma página web com gráficos, tempo de execução e detalhes de cada passo.*
 
-```bat
-mvn test
-allure serve target/allure-results
+## 🔍 Detalhes da Implementação
+
+### Leitura de Arquivos
+Foi implementado um método utilitário para ler a massa de dados JSON:
+
+```java
+public static String lerArquivoJson(String arquivoJson) throws IOException {
+    return new String(Files.readAllBytes(Paths.get(arquivoJson)));
+}
 ```
 
-Ou gere o relatório estático:
+### Setup Dinâmico
+Utilizamos o `@BeforeEach` para garantir que o ID do pedido esteja sempre sincronizado com o arquivo JSON antes de cada teste:
 
-```bat
-mvn test
-allure generate target/allure-results -o target/allure-report --clean
+```java
+@BeforeEach
+public void setup() throws IOException {
+    String json = lerArquivoJson(pathJson);
+    orderId = String.valueOf(JsonPath.from(json).getInt("id"));
+}
 ```
-
-Opção B — Usando o plugin Maven Allure (se preferir integrar ao pom.xml):
-- Adicione o plugin `io.qameta.allure:allure-maven` ao `pom.xml` e depois execute `mvn allure:report` (veja a documentação do Allure Maven Plugin para versões e configuração).
-
-Observação: se você não tiver o Allure instalado, as instruções acima mostram alternativas; o comando `allure serve` exige a instalação do Allure CLI.
-
-O que procurar no relatório Allure
-
-- Visão geral dos testes (pass/fail)
-- Execuções detalhadas com steps, requests/responses (se instrumentado) e anexos
-- Históricos/Trends (quando integrado ao CI)
-
-Sugestões rápidas para deixar o repositório mais atraente
-
-- Adicionar GitHub Actions que rodem `mvn test` e publiquem os resultados do Allure (ou o XML/artefatos) em cada push/PR.
-- Incluir um screenshot ou GIF curto no README mostrando o relatório Allure localmente (ajuda recrutadores a entenderem imediatamente o que será mostrado).
-- Adicionar `CONTRIBUTING.md` com guidelines e um `CHANGELOG.md` simples se você pretende iterar no projeto.
-
-Exemplos de comandos úteis (Windows):
-
-- Rodar testes e gerar report estático:
-
-```bat
-mvn test && allure generate target/allure-results -o target/allure-report --clean
-```
-
-- Servir o relatório (abre um browser):
-
-```bat
-allure serve target/allure-results
-```
-
-Contato / quem fez este projeto
-
-- Nome: (adicione seu nome)
-- LinkedIn / Email: (adicione informações de contato)
-
-Próximos passos que posso fazer por você
-
-- Adicionar um badge de build / GitHub Actions YAML que rode os testes e exporte os resultados do Allure.
-- Incluir um exemplo `.github/workflows/ci.yml` que executa `mvn test` e salva `target/allure-results` como artifact.
 
 ---
-
-Se quiser, eu já crio o workflow do GitHub Actions para gerar e publicar os artefatos do Allure; diga se prefere que eu o adicione ao repositório agora.
+Desenvolvido para fins de estudo em QA Automation.
