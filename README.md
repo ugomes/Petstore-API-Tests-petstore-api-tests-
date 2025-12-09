@@ -117,4 +117,3 @@ Próximos passos que posso fazer por você
 
 ---
 
-Se quiser, eu já crio o workflow do GitHub Actions para gerar e publicar os artefatos do Allure; diga se prefere que eu o adicione ao repositório agora.
