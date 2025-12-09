@@ -6,6 +6,10 @@ target/
 allure-results/
 target/allure-report/
 
+# Ignore Allure CLI binaries downloaded locally
+allure/
+allure.zip
+
 # IDE files
 .idea/
 *.iml
