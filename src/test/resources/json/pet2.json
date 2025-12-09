@@ -1,0 +1,18 @@
+{
+  "id": 231985,
+  "category": {
+    "id": 1,
+    "name": "Jay"
+  },
+  "name": "Doge",
+  "photoUrls": [
+    "string"
+  ],
+  "tags": [
+    {
+      "id": 2,
+      "name": "femea"
+    }
+  ],
+  "status": "vacinado, vermifugado"
+}

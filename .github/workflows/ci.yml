@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+
+      - name: Cache Maven local repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build and run tests
+        run: mvn -B test
+
+      - name: Upload Allure results (raw)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          if [ -d "target/allure-results" ] && [ "$(ls -A target/allure-results)" ]; then
+            sudo apt-get update && sudo apt-get install -y wget unzip
+            wget -qO allure.zip https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.27.0/allure-commandline-2.27.0.zip
+            unzip -q allure.zip -d allure
+            # Try common unzip layout: the binary is usually under allure/bin or allure/allure-*/bin
+            if [ -x "./allure/bin/allure" ]; then
+              ./allure/bin/allure generate target/allure-results -o target/allure-report --clean || true
+            else
+              # find the binary and run it
+              BINARY=$(find ./allure -type f -name allure -perm /u+x 2>/dev/null | head -n 1)
+              if [ -n "$BINARY" ]; then
+                "$BINARY" generate target/allure-results -o target/allure-report --clean || true
+              else
+                echo "Allure binary not found after unzip"
+              fi
+            fi
+          else
+            echo "No allure-results found"
+          fi
+
+      - name: Upload Allure HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/allure-report

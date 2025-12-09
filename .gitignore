@@ -1,0 +1,23 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Allure results and reports (local generated)
+allure-results/
+target/allure-report/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Build tools / editors
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other
+logs/
+*.log
