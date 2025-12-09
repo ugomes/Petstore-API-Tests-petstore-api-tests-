@@ -98,4 +98,4 @@ public void setup() throws IOException {
 Desenvolvido para fins de estudo em QA Automation.
 =======
 
->>>>>>> bcb270ec874fcda5f3c0d9653544a73453c198e3
+
