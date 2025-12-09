@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Automação de Testes de API - Petstore (Módulo Store)
 
 Este projeto consiste em uma suíte de testes automatizados para a API pública [Swagger Petstore](https://petstore.swagger.io/), focando especificamente nas operações do módulo **Store** (Loja).
@@ -95,3 +96,6 @@ public void setup() throws IOException {
 
 ---
 Desenvolvido para fins de estudo em QA Automation.
+=======
+
+>>>>>>> bcb270ec874fcda5f3c0d9653544a73453c198e3
